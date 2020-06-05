@@ -1,13 +1,10 @@
-const readout = document.querySelector('.display').textContent;
+const readout = document.querySelector('.display');
 const nums = document.querySelectorAll('.num');
 const operator = document.querySelectorAll('.opr');
 const equal = document.querySelector('#equals');
 const clear = document.querySelector('#clear');
 const neg = document.querySelector('#neg');
 const percent = document.querySelector('#percent');
-
-// add variable neg after if result and if oprset add if
-// to check if neg and fix the readout reset there
 
 let opr;
 let oprSet = false;
@@ -19,37 +16,47 @@ let eqReady = false;
 let specialOp = false;
 
 function setNum(e){
+  // clear result when user clicks number, unless they click negative
   if(result && !specialOp){
       firstNum = parseFloat(readout.textContent);
       readout.textContent = '';
     }
+  // operator is set, so first part of equation is saved, clear display, reset opr, and flag equation ready
   if(oprSet){
       readout.textContent = '';
       removeClass();
       oprSet = false;
       eqReady = true;
   }
-    result = false;
-    // get number from button click
-    // const newNum = parseFloat(e.target.dataset.num);
-    newNum = e.target.dataset.num;
-    readout.textContent = readout.textContent + newNum;
+  // set result to false so display won't be cleared when number click
+  result = false;
+  // get number from button click
+  newNum = this.dataset.num;
+  // push number to display
+  readout.textContent = readout.textContent + newNum;
 }
 
 function setOperator(e){
-    if(oprSet){
-      removeClass();
-    }
-    if(eqReady){
-      secondNum = parseFloat(readout.textContent);
-      equals();
-    }
-    firstNum = parseFloat(readout.textContent);
-    opr = e.target.dataset.opr;
-    e.target.classList.add("clicked");
-    oprSet = true;
+  // remove CSS from op button
+  if(oprSet){
+    removeClass();
+  }
+  // if operator is clicked when eq is ready, save number and send to equals()
+  if(eqReady){
+    secondNum = parseFloat(readout.textContent);
+    equals();
+  }
+  // save number typed in before operator clicked
+  firstNum = parseFloat(readout.textContent);
+  // set operator
+  opr = this.dataset.opr;
+  // add CSS
+  this.classList.add('clicked');
+  // flag oprSet so readout will be cleared when number is clicked after operator
+  oprSet = true;
 }
 
+// toggles CSS on operator buttons
 function removeClass(){
   operator.forEach(function(i){
     if(i.classList.contains("clicked")){
@@ -58,6 +65,7 @@ function removeClass(){
   });
 }
 
+// toggles negative indicator in display and equation
 function negateNum(){
   if(readout.textContent.includes('-')){
     readout.textContent = readout.textContent.substring(1);
@@ -67,10 +75,12 @@ function negateNum(){
   }
 }
 
+// percentage button logic
 function percentage(){
   readout.textContent = parseFloat(readout.textContent) * 0.01;
 }
 
+// computes equation, displays result, resets for continued equation
 function equals(){
   if(eqReady){
     switch(opr){
@@ -103,6 +113,7 @@ function equals(){
   }
 }
 
+// reset for continued equation after equals
 function reset(){
   oprSet = false;
   result = true;
@@ -110,6 +121,8 @@ function reset(){
   secondNum = '';
   specialOp = false;
 }
+
+// resets All
 function clearAll(){
   opr = '';
   specialOp = false;
@@ -123,6 +136,7 @@ function clearAll(){
   removeClass();
 }
 
+// Event Listeners
 nums.forEach(num => num.addEventListener('click', setNum));
 operator.forEach(op => op.addEventListener('click', setOperator));
 equal.addEventListener('click', equals);
